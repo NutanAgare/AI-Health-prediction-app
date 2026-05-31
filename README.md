@@ -63,5 +63,6 @@ streamlit run app.py
 ## Author
 Nutan Hagare
 
-Artificial Intelligence & Data Science Engineer
+Artificial Intelligence & Data Science 
+
 Developed as a Machine Learning and Healthcare Analytics Project using Python, Streamlit, SQLite, and Scikit-learn.

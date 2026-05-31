@@ -45,55 +45,62 @@ model.fit(X_train, y_train)
 # VALIDATION FUNCTIONS
 # =========================
 def validate_email(email):
-    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    email = email.strip()
+    pattern = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
     return re.match(pattern, email)
 
 def validate_dob(dob):
-    return dob <= date.today()
+    return date(1900, 1, 1) <= dob <= date.today()
 
 def check_duplicate(name, email):
-    c.execute("SELECT * FROM patients WHERE name=? AND email=?", (name, email))
+
+    c.execute("""
+    SELECT *
+    FROM patients
+    WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))
+    AND LOWER(TRIM(email)) = LOWER(TRIM(?))
+    """,
+    (
+        name,
+        email
+    ))
+
     return c.fetchone()
 
 # =========================
-# ML PREDICTION FUNCTION
+# ML PREDICTION
 # =========================
 def health_prediction(glucose, haemoglobin, cholesterol):
-    pred = model.predict([[glucose, haemoglobin, cholesterol]])[0]
-    return pred
+    return model.predict([[glucose, haemoglobin, cholesterol]])[0]
 
 # =========================
-# AI MEDICAL REPORT LAYER (UPGRADED)
+# AI MEDICAL REPORT
 # =========================
 def generate_medical_ai_report(glucose, haemoglobin, cholesterol, prediction):
 
     issues = []
 
-    # Glucose analysis
     if glucose > 140:
-        issues.append("High glucose → Possible Diabetes Risk")
+        issues.append("High glucose → Diabetes Risk")
     elif glucose < 70:
         issues.append("Low glucose → Hypoglycemia Risk")
 
-    # Hemoglobin analysis
     if haemoglobin < 12:
         issues.append("Low haemoglobin → Anemia Risk")
     elif haemoglobin > 17:
         issues.append("High haemoglobin → Blood abnormality")
 
-    # Cholesterol analysis
     if cholesterol > 240:
-        issues.append("High cholesterol → Cardiovascular Risk")
+        issues.append("High cholesterol → Heart Risk")
     elif cholesterol < 120:
         issues.append("Low cholesterol → Nutritional imbalance")
 
-    # ML prediction interpretation
     if prediction == "High":
-        risk_msg = "HIGH RISK PATIENT - Immediate attention required"
+        risk_msg = "HIGH RISK PATIENT"
     elif prediction == "Medium":
-        risk_msg = "MODERATE RISK PATIENT - Lifestyle changes needed"
+        risk_msg = "MODERATE RISK PATIENT"
     else:
-        risk_msg = "LOW RISK PATIENT - Stable condition"
+        risk_msg = "LOW RISK PATIENT"
 
     return risk_msg + " | " + " ; ".join(issues)
 
@@ -101,20 +108,26 @@ def generate_medical_ai_report(glucose, haemoglobin, cholesterol, prediction):
 # UI
 # =========================
 st.title("AI Health Prediction System")
-st.write("Random Forest ML + AI Medical Interpretation + SQLite")
+st.write("AI Health Prediction System built using Machine Learning and Python")
 
 # =========================
-# INPUT
+# INPUT FIELDS (FIXED DOB RANGE)
 # =========================
 name = st.text_input("Full Name")
-dob = st.date_input("Date of Birth")
+
+dob = st.date_input(
+    "Date of Birth",
+    min_value=date(1900, 1, 1),
+    max_value=date.today()
+)
+
 email = st.text_input("Email")
 glucose = st.number_input("Glucose", min_value=0.0)
 haemoglobin = st.number_input("Haemoglobin", min_value=0.0)
 cholesterol = st.number_input("Cholesterol", min_value=0.0)
 
 # =========================
-# CREATE (INSERT)
+# CREATE RECORD
 # =========================
 if st.button("Add Patient Record"):
 
@@ -122,7 +135,7 @@ if st.button("Add Patient Record"):
         st.error("Invalid Email Address")
 
     elif not validate_dob(dob):
-        st.error("Future DOB Not Allowed")
+        st.error("DOB must be between 1900 and today")
 
     elif check_duplicate(name, email):
         st.error("Duplicate Record Found")
@@ -146,23 +159,25 @@ if st.button("Add Patient Record"):
         st.success("Record Added Successfully")
 
 # =========================
-# READ
+# READ RECORDS
 # =========================
 st.subheader("All Patient Records")
 data = pd.read_sql("SELECT * FROM patients", conn)
 st.dataframe(data)
 
 # =========================
-# UPDATE
+# UPDATE RECORD
 # =========================
 st.subheader("Update Email")
-update_id = st.number_input("Patient ID for Update", min_value=1, step=1)
 
+update_id = st.number_input("Patient ID for Update", min_value=1, step=1)
 new_email = st.text_input("New Email")
 
 if st.button("Update Record"):
+
     if not validate_email(new_email):
         st.error("Invalid Email Address")
+
     else:
         c.execute("""
         UPDATE patients
@@ -174,9 +189,10 @@ if st.button("Update Record"):
         st.success("Email Updated Successfully")
 
 # =========================
-# DELETE
+# DELETE RECORD
 # =========================
 st.subheader("Delete Record")
+
 delete_id = st.number_input("Patient ID to Delete", min_value=1, step=1, key="delete")
 
 if st.button("Delete Record"):

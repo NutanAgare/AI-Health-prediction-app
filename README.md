@@ -1,68 +1,74 @@
-# AI-Health-prediction-app
-AI-Based Health Prediction System using Python, Streamlit, SQLite, and Machine Learning for patient data management and health risk prediction.
-# AI-Based Health Prediction System
+# AI Health Prediction System
 
 ## Overview
 
-The AI-Based Health Prediction System is a Machine Learning-powered healthcare application developed using Python, Streamlit, SQLite, and Scikit-learn. The system helps predict potential health risks based on patient information while providing an easy-to-use platform for managing patient records.
+This project is an AI-powered Health Prediction System developed using Python, Streamlit, FastAPI, SQLite, and Machine Learning.
+
+The application allows users to:
+
+* Add patient records
+* Validate patient information
+* Store records in SQLite database
+* Perform CRUD operations
+* Generate disease risk predictions through API integration
+* Display prediction results in the Remarks field
 
 ## Features
 
-* Patient registration and record management
-* Health risk prediction using Machine Learning
-* Interactive web interface with Streamlit
-* Secure data storage using SQLite
-* Real-time prediction results
-* User-friendly dashboard
+### Patient Management
 
-## Technologies Used
+* Create patient records
+* View patient records
+* Update patient email
+* Delete patient records
+
+### Validations
+
+* Email validation
+* Date of Birth validation
+* Duplicate record detection
+
+### AI/ML Prediction
+
+* Predicts health risk based on:
+
+  * Glucose
+  * Haemoglobin
+  * Cholesterol
+
+### Technologies Used
 
 * Python
 * Streamlit
+* FastAPI
 * SQLite
 * Pandas
-* NumPy
 * Scikit-learn
-* Machine Learning
-
-## Project Workflow
-
-1. Collect patient health information
-2. Store patient data in SQLite database
-3. Preprocess and analyze health parameters
-4. Apply Machine Learning model for prediction
-5. Display health prediction results
-
-## Benefits
-
-* Early health risk assessment
-* Efficient patient data management
-* Fast and accurate predictions
-* Data-driven healthcare insights
+* Requests
 
 ## Installation
 
-```bash
+Install dependencies:
+
 pip install -r requirements.txt
-```
 
-## Run the Application
+## Run FastAPI Server
 
-```bash
+uvicorn api:app --reload
+
+## Run Streamlit Application
+
 streamlit run app.py
-```
 
-## Future Enhancements
+## Project Workflow
 
-* Multiple disease prediction modules
-* Advanced analytics dashboard
-* Cloud database integration
-* Health report generation
-* Doctor recommendation system
+1. User enters patient details.
+2. Application validates data.
+3. Data is sent to API endpoint.
+4. API generates health risk prediction.
+5. Prediction result is stored in Remarks.
+6. Patient record is saved into SQLite database.
 
 ## Author
-Nutan Hagare
 
-Artificial Intelligence & Data Science 
-
-Developed as a Machine Learning and Healthcare Analytics Project using Python, Streamlit, SQLite, and Scikit-learn.
+Nutan Agare
